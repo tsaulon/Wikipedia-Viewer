@@ -82,7 +82,14 @@
 						}						
 					});
 				});
-			});
+			});			
+		//Submit query on 'enter' key
+		$('#text').keypress(function(event){
+			if(event.keyCode == 13){
+				$('#search').click();
+				return false;
+			}
+		});
 	});
 	</script>
 <head>
