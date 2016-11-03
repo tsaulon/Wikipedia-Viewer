@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang='en-us'>
+	<title>Wikipedia Viewer</title>
 	<meta charset='utf-8'>
 	<meta name='author' content='Tyrone Saulon'>
 	<meta name='description' content='Wikipedia viewer to pull up articles on search or at random'>
@@ -7,7 +8,7 @@
 	<!--Google Fonts-->
 	<link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
 	<!--Animation.css-->
-	<link rel='stylesheet' href='../css/animationCSS/animate.css'>
+	<link rel='stylesheet' href='css/animationCSS/animate.css'>
 	<!--Twitter Bootstrap-->
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 	<!--My CSS-->
@@ -15,53 +16,93 @@
 		#searchContainer{
 			margin-top: 25vh;
 		}
+		.myLinks:link, .myLinks:hover, .myLinks:visited, .myLinks:active{
+			text-decoration: none;
+		}
+		.attribution{
+			position: fixed;
+			bottom: 0;
+			right: 0;
+			font-size: 60%;
+		}
 	</style>
 	<!--call jQuery-->
-	<script src="../jquery/jquery-3.1.1.js"></script>
+	<script src="jquery/jquery-3.1.1.js"></script>
 	<script>
-		$(document).ready(function(){
+	$(document).ready(function(){
 		
-			$('#searchContainer').addClass('animated fadeIn');
+		$('#W').hover(
+			function(){
+				$(this).addClass('animated swing');
+			},
+			function(){
+				$(this).removeClass('animated swing');
+		});
+		var searchItem = '';
+		$('#searchContainer').addClass('animated fadeIn');
+		
+		$( "#search" ).click(
 			
-			$( "#search" ).click(function() {
-					$( "#searchContainer" ).animate({
-							"margin-top": 0
-					}, 500, function() { 
-					//Call Ajax Function Here
-					
-					var searchItem = document.getElementById('search').value;
-					var api = "https://en.wikipedia.org/w/api.php?action=query&titles=" + searchItem + "&prop=revisions&rvprop=content&format=json";
-					
+			function() {
+				$( "#searchContainer" ).animate({
+						"margin-top": 0
+				}, 500,
+				
+				function() { 
+				//Get user input					
+				var searchItem = document.getElementById('text').value;
+				//API string to use
+				var api = "https://en.wikipedia.org/w/api.php?action=opensearch&search="+ searchItem +"&format=json&callback=?";				
+				//Declare tags we will print
+				var queryResults = '';
+				//API Call
 					$.ajax({
-						type: "GET",
 						url: api,
+						type: "GET",
 						async: false,
-						datatype: "json",
+						dataType: 'json',
 						success: function(data){
-						console.log(data);
+							//To remove previous queries
+							document.getElementById('queries').innerHTML = '';
+							//Loop through data and build 'queryResults'
+							for(var i = 0; i < data[1].length; i++){
+								queryResults += "<div class='row well'>";
+								queryResults += "<a href='" + data[3][i] + "' class='myLinks' target='_blank'>";
+								queryResults += "<h2>" + data[1][i] + "</h2>";
+								queryResults += "</a>";
+								queryResults += "<p>" + data[2][i] + "</p>";
+								queryResults += "</div>";
+							}
+						//Print data to page
+						document.getElementById('queries').innerHTML += queryResults;						
+						
 						},
 						error: function(errorMessage){
-						
-						alert("Error");
-						
-						}
-					
+							alert("Error!");
+						}						
 					});
 				});
 			});
-		});
+	});
 	</script>
 <head>
 </head>
 <body>
 	<div id='searchContainer' class='container-fluid col-sm-6 col-sm-offset-3'>
 		<div class='row'>
-			<img id='W' src='Wiki.png' alt='W' style='height: auto; width: 200px;' class='center-block'>
+			<a href='https://en.wikipedia.org/wiki/Special:Random' target='_blank'><img id='W' src='Wiki.png' alt='W' style='height: auto; width: 200px;' class='center-block'></a>
 		</div>
 		<div class='row'>
+		<form method='get'>
 			<input type='text' name='text' id='text' class='form-control'>
 			<button type='button' name='search' id='search' class='btn btn-primary col-xs-12' style='margin-top: 4px'>Search</button>
+		</form>
 		</div>
+	</div>
+	<div id='queries' class='container-fluid col-lg-6 col-lg-offset-3 col-sm-10 col-sm-offset-1' style='margin-top: 50px;'>		
+	</div>
+	<div class='attribution' style='font-size: 60%;'>
+		<p>Images retrieved from <a href='https://commons.wikimedia.org/wiki/File:Wikipedia-favicon.png'>wikimedia</a></p>
 	</div>
 </body>
 </html>
