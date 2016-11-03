@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang='en-us'>
+	<meta charset='utf-8'>
+	<meta name='author' content='Tyrone Saulon'>
+	<meta name='description' content='Wikipedia viewer to pull up articles on search or at random'>
+	<meta name='keywords' content='tyrone, saulon, tsaulon, wikiviewer, wikipedia, wiki, viewer, articlesearch'>
+	<!--Google Fonts-->
+	<link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+	<!--Animation.css-->
+	<link rel='stylesheet' href='../css/animationCSS/animate.css'>
+	<!--Twitter Bootstrap-->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+	<!--My CSS-->
+	<style>
+		#searchContainer{
+			margin-top: 25vh;
+		}
+	</style>
+	<!--call jQuery-->
+	<script src="../jquery/jquery-3.1.1.js"></script>
+	<script>
+		$(document).ready(function(){
+		
+			$('#searchContainer').addClass('animated fadeIn');
+			
+			$( "#search" ).click(function() {
+					$( "#searchContainer" ).animate({
+							"margin-top": 0
+					}, 500, function() { 
+					//Call Ajax Function Here
+					
+					var searchItem = document.getElementById('search').value;
+					var api = "https://en.wikipedia.org/w/api.php?action=query&titles=" + searchItem + "&prop=revisions&rvprop=content&format=json";
+					
+					$.ajax({
+						type: "GET",
+						url: api,
+						async: false,
+						datatype: "json",
+						success: function(data){
+						console.log(data);
+						},
+						error: function(errorMessage){
+						
+						alert("Error");
+						
+						}
+					
+					});
+				});
+			});
+		});
+	</script>
+<head>
+</head>
+<body>
+	<div id='searchContainer' class='container-fluid col-sm-6 col-sm-offset-3'>
+		<div class='row'>
+			<img id='W' src='Wiki.png' alt='W' style='height: auto; width: 200px;' class='center-block'>
+		</div>
+		<div class='row'>
+			<input type='text' name='text' id='text' class='form-control'>
+			<button type='button' name='search' id='search' class='btn btn-primary col-xs-12' style='margin-top: 4px'>Search</button>
+		</div>
+	</div>
+</body>
+</html>
